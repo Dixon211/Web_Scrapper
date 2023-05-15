@@ -1,2 +1,39 @@
 from bs4 import BeautifulSoup
-with open('')
+import requests
+
+#this allows me to set the URL, and check the HTTPS response code. 200 means the site was able to connect, so you start scraping
+# but if not it will return the error code so you can look it up 
+url = 'https://www.scrapethissite.com/pages/'
+http_response = requests.get(url)
+
+if http_response.status_code == 200:
+# hackerman
+    print("I'm in\n\n\n")
+    html_content = http_response.text
+
+#With this we have written to the webpage_testing.html all the html code for the site and now we can work on it locally to avoid overscraping
+    with open('webpage_testing.html', 'r+', encoding='utf-8') as local_file:
+        local_file.write(html_content)
+        local_file.seek(0) # moves the pointer to the beginning
+        content = local_file.read()
+        soup = BeautifulSoup(content, 'lxml')
+
+        #this uses bs4 to get all the div tags with class 'page'
+        title_divs = soup.find_all('div',class_= 'page')
+        titles_links = []
+        #we use this as when you get the div class, you get all its subclasses, so we just iterate searching through each subclass for each div
+        for title_div in title_divs:
+            title_h3 = title_div.find('h3', class_='page-title')
+            title_a = title_h3.find('a')
+            title = title_a.text
+            link = title_a['href']
+            titles_links.append((title, link))
+
+        # took around 3 hours to make, felt good to make my own. Time to try and apply this.
+        for title,link in titles_links:
+            print(f'{title}\n{link}\n\n')
+
+
+    
+else:
+    print(f'failed to connect, Error Code:{http_response.status_code}')
