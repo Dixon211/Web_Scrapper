@@ -3,7 +3,7 @@ import requests
 import tkinter as tk
 from PIL import ImageTk, Image
 
-def submit_action():
+def submit_action(message_label, text_box):
     input_text = entry.get()
     url = input_text
     http_response = requests.get(url)
@@ -18,32 +18,47 @@ def submit_action():
             content = local_file.read()
             soup = BeautifulSoup(content, 'lxml')
             display_text = "Scraping successful!"
+        
+
     else:
          display_text =  f'failed to connect, Error Code:{http_response.status_code}'
 #uses the .config to change the text of the message_label
     message_label.config(text=display_text)
+    text_box.insert(tk.INSERT, html_content)
 
-#creates a window
-window =tk.Tk()
-window.geometry("500x300") #measured in pixels
 
-#setting python image
-image = Image.open('python.png')
-image = image.resize((100, 100))
-photo = ImageTk.PhotoImage(image)
-image_label= tk.Label(window, image=photo)
-image_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+def create_window():
+    #creates a window
+    window =tk.Tk()
+    window.geometry("500x300") #measured in pixels
 
-#creates an input field
-entry = tk.Entry(window, width=50)
-entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+    #setting python image
+    image = Image.open('python.png')
+    image = image.resize((100, 100))
+    photo = ImageTk.PhotoImage(image)
+    image_label= tk.Label(window, image=photo)
+    image_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
-#creates a button
-submit_button = tk.Button(window, text="Site to Scrape", command = submit_action)
-submit_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    #creates an input field
+    entry = tk.Entry(window, width=50)
+    entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
-message_label = tk.Label(window, text="")
-message_label.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+    #creates a button
+    submit_button = tk.Button(window, text="Site to Scrape", command = submit_action)
+    submit_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-window.mainloop()
+    message_label = tk.Label(window, text="")
+    message_label.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
 
+    #create an area for the text
+    text_box = tk.Text(window)
+    text_box.place(relx=0.01, rely=0.5, anchor=tk.W)
+
+    return message_label, text_box, window, image_label, entry
+
+def main():
+       message_label, text_box, window, image_label, entry = create_window()
+       window.mainloop()
+
+if __name__ == '__main__':
+    main()
