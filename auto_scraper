@@ -1,0 +1,49 @@
+from bs4 import BeautifulSoup
+import requests
+import tkinter as tk
+from PIL import ImageTk, Image
+
+def submit_action():
+    input_text = entry.get()
+    url = input_text
+    http_response = requests.get(url)
+
+    if http_response.status_code == 200:
+        html_content = http_response.text
+
+        #With this we have written to the webpage_testing.html all the html code for the site and now we can work on it locally to avoid overscraping
+        with open('Scraped_site.html', 'r+', encoding='utf-8') as local_file:
+            local_file.write(html_content)
+            local_file.seek(0) # moves the pointer to the beginning
+            content = local_file.read()
+            soup = BeautifulSoup(content, 'lxml')
+            display_text = "Scraping successful!"
+    else:
+         display_text =  f'failed to connect, Error Code:{http_response.status_code}'
+#uses the .config to change the text of the message_label
+    message_label.config(text=display_text)
+
+#creates a window
+window =tk.Tk()
+window.geometry("500x300") #measured in pixels
+
+#setting python image
+image = Image.open('python.png')
+image = image.resize((100, 100))
+photo = ImageTk.PhotoImage(image)
+image_label= tk.Label(window, image=photo)
+image_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+#creates an input field
+entry = tk.Entry(window, width=50)
+entry.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+
+#creates a button
+submit_button = tk.Button(window, text="Site to Scrape", command = submit_action)
+submit_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+message_label = tk.Label(window, text="")
+message_label.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+
+window.mainloop()
+
