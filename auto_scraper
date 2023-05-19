@@ -31,6 +31,7 @@ def create_window():
     #creates a window
     window =tk.Tk()
     window.geometry("500x300") #measured in pixels
+    window.attributes('-fullscreen', True)
 
     #setting python image
     image = Image.open('python.png')
@@ -52,12 +53,15 @@ def create_window():
 
     #create an area for the text
     text_box = tk.Text(window)
-    text_box.place(relx=0.01, rely=0.5, anchor=tk.W)
+    text_box.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
     return message_label, text_box, window, image_label, entry
+def close_win(e):
+     window.destroy()
 
 def main():
        message_label, text_box, window, image_label, entry = create_window()
+       window.bind('<Escape>', lambda e: close_win(e))
        window.mainloop()
 
 if __name__ == '__main__':
