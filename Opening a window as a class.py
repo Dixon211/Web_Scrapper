@@ -2,12 +2,16 @@ from bs4 import BeautifulSoup
 import requests
 import tkinter as tk
 from PIL import ImageTk, Image
+from tkinter import Frame
+from tkinter import INSERT
 
 class Window:
     def __init__(self, root):
         self.root = root
+        root.title = "Scraping Practice"
         root.geometry("500x300") #measured in pixels
         root.attributes('-fullscreen', True)
+        root.config(bg="#262624")
         root.bind('<Escape>', self.close_win) #binds close window to esc key
 
         #setting python image
@@ -29,6 +33,10 @@ class Window:
         self.message_label = tk.Label(self.root, text="")
         self.message_label.place(relx=0.5, rely=0.46, anchor=tk.CENTER)
 
+        #text box, start invisible
+        self.text_box = tk.Text(root)
+
+
     def submit_action(self):
         input_text = self.entry.get()
         url = input_text
@@ -36,22 +44,28 @@ class Window:
 
         if http_response.status_code == 200:
             html_content = http_response.text
+            soup = BeautifulSoup(html_content, 'lxml')
+            self.text_box.insert(INSERT, soup)
 
-            #With this we have written to the webpage_testing.html all the html code for the site and now we can work on it locally to avoid overscraping
-            with open('Scraped_site.html', 'r+', encoding='utf-8') as local_file:
-                local_file.write(html_content)
-                local_file.seek(0) # moves the pointer to the beginning
-                content = local_file.read()
-                soup = BeautifulSoup(content, 'lxml')
-                display_text = "Scraping successful!"
-                self.message_label.config(text=display_text)
+            display_text = "Scraping successful!"
+            self.message_label.config(text=display_text)
+            self.root.after(1500, self.transition_text) #adds a delay to the execution in milliseconds
+
         
-
         else:
             display_text =  f'failed to connect, Error Code:{http_response.status_code}'
             #uses the .config to change the text of the message_label
             self.message_label.config(text=display_text)
 
+    def transition_text(self):
+        #get rid of current elements
+        self.image_label.place_forget()
+        self.entry.place_forget()
+        self.submit_button.place_forget()
+        self.message_label.place_forget()
+
+        self.text_frame = Frame(root, width=900, height=1200, bg="black")
+        self.text_box.grid(row=0, column=0, padx=10, pady=5)
 
 
     
