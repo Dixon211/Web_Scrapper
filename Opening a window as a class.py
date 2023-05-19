@@ -58,23 +58,31 @@ class Window:
             self.message_label.config(text=display_text)
 #create new window with editable textbox
     def transition_text(self):
-        #get rid of current elements and set the new frames!
+        #get rid of current elements and set the new frames
         self.entry_frame.forget()
         self.upper_frame = Frame(root)
-        self.upper_frame.pack(side='top', expand=True)
+        self.upper_frame.pack(side='top', expand=True, fill='both')
         self.text_frame = Frame(root)
-        self.text_frame.pack()
+        self.text_frame.pack(side='bottom', expand=True, fill='both')
+        self.text_frame.grid_columnconfigure(0, weight=1) #this gives the frame the ability to fill its whole area for the column specified
+        self.text_frame.grid_rowconfigure(0, weight=1)
 
-
-        self.text_box = tk.Text(self.text_frame, width=600, height=800)
-        self.text_box.grid(row=0, column=0, padx=10, pady=5)
+        #create the textbox
+        self.text_box = tk.Text(self.text_frame)
+        self.text_box.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
         self.text_box.insert(INSERT, self.soup)
+        #self.text_box.grid_columnconfigure(0, weight=1)
+        #self.text_box.grid_rowconfigure(0, weight=1)
+
+        scrollb=tk.Scrollbar(self.text_frame, command=self.text_box.yview)
+        scrollb.grid(row=0, column=1, sticky='ns')
+        self.text_box['yscrollcommand'] = scrollb.set
+
 
         
         self.back_button = tk.Button(self.upper_frame, text="New Site", command = self.create_page)
         self.back_button.grid(row=1, column=0, padx=10, pady=5)
-   
-#the event variable must be there to have the esc key work in the window.
+   #allows esc to close the window
     def close_win(self, event=None):
         self.root.destroy()
 
